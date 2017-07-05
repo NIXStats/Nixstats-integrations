@@ -11,15 +11,6 @@ Add Nixstats notifications via a new WebHook in Rocket.Chat
 
 Paste this in javascript in the "Script" textarea on Rocket.Chat webhook settings
 
-After saving the data you can use the following commands to retrieve data.
-
-`ns servers list` to list your servers with their ID's and load average.
-
-<img src="serverlist.png" data-canonical-src="graphs.png" width="400" />
-
-`ns graphs [serverid]` to retrieve a graph of Memory, Network, Load average and Disk usage of the specified server.
-
-<img src="graphs.png" data-canonical-src="graphs.png" width="400" />
 
 ```/* exported Script */
 /* globals Store */
@@ -96,3 +87,14 @@ class Script {
   }
 }
 ```
+
+
+After saving the data you can use the following commands to retrieve data.
+
+`ns servers list` to list your servers with their ID's and load average.
+
+<img src="serverlist.png" data-canonical-src="graphs.png" width="400" />
+
+`ns graphs [serverid]` to retrieve a graph of Memory, Network, Load average and Disk usage of the specified server.
+
+<img src="graphs.png" data-canonical-src="graphs.png" width="400" />
