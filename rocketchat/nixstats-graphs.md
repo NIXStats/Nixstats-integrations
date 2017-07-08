@@ -19,9 +19,9 @@ class Script {
   prepare_outgoing_request({ request }) {
     let match; 
    
-    match = request.data.text.match(/^ns servers\s(ls|list)?$/); 
+    match = request.data.text.match(/^ns servers\s(ls|list)\s*(.*)?$/); 
     if (match) { 
-      let u = request.url + 'servers?token='+request.data.token; 
+      let u = request.url + 'servers?perpage=99&token='+request.data.token; 
       return {
         url: u,
         headers: request.headers,
@@ -31,12 +31,41 @@ class Script {
     
     match = request.data.text.match(/^ns graphs\s(.*)?$/);
     if (match) { 
-      let u = request.url + 'server/'+match[1]+'?charts=yes&token='+request.data.token; 
-      return {
-        url: u,
-        headers: request.headers,
-        method: 'GET'
-      };
+      var matched = false; 
+      var options;
+      var serverrequest = HTTP('GET', request.url + 'servers?perpage=99&token='+request.data.token, options);
+      var serverlist = []
+      JSON.parse(serverrequest.result.content).servers.forEach(function(pr) {
+        serverlist.push({'name': pr.name, 'id': pr.id});
+      });
+        
+      serverlist.forEach(function(serv) {
+        if(serv.id == match[1])
+        {
+          matched = serv.id;
+        }
+        if(serv.name == match[1])
+        {
+          matched = serv.id;
+        }
+      });
+               
+      if(!matched){
+        return {
+          message: {
+            text: 'Server not found.'
+          }
+        }; 
+      }
+      else
+      {
+        let u = request.url + 'server/'+matched+'?charts=yes&token='+request.data.token; 
+        return {
+          url: u,
+          headers: request.headers,
+          method: 'GET'
+        };
+      }
     }
      
     match = request.data.text.match(/^help$/);
@@ -73,7 +102,7 @@ class Script {
     {
       text.push('```'); 
       response.content.servers.forEach(function(pr) {
-        text.push(''+pr.id+"\t "+pr.last_data.load+"\t"+pr.name+'');
+        text.push(''+pr.id+"\t "+pr.last_data.load.replace(",",",\t")+"\t"+pr.name+'');
       });
       text.push('```'); 
     }
